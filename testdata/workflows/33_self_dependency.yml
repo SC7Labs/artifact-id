@@ -1,0 +1,8 @@
+name: Self Dependency
+on: [push]
+jobs:
+  build:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run build

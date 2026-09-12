@@ -1,0 +1,26 @@
+name: Docker Mutable Tag Warning
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: myregistry/app:latest
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate image digest
+        run: docker run --rm myregistry/app@${{ steps.docker_build.outputs.digest }} npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy container with mutable tag
+        run: gcloud run deploy my-app --image myregistry/app:latest

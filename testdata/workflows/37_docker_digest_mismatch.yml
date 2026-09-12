@@ -1,0 +1,21 @@
+name: Docker Digest Mismatch
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - id: build_a
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: registry/app:test
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker run registry/app@sha256:1111111111111111111111111111111111111111111111111111111111111111 npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: gcloud run deploy myapp --image registry/app@sha256:2222222222222222222222222222222222222222222222222222222222222222

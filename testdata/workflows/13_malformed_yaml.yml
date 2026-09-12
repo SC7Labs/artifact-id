@@ -1,0 +1,8 @@
+name: Malformed YAML
+on: push
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: broken
+        run: [unclosed list

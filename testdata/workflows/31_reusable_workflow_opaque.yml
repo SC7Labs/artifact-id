@@ -1,0 +1,15 @@
+name: Reusable Workflow Opaque
+on: [push]
+jobs:
+  build:
+    uses: octocat/example-workflows/.github/workflows/build.yml@v1
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run deploy

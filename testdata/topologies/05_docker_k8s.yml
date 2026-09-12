@@ -1,0 +1,24 @@
+name: Docker Kubernetes Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - id: docker_build
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: ghcr.io/org/app:latest
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - run: docker run ghcr.io/org/app@${{ steps.docker_build.outputs.digest }} npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - run: kubectl set image deployment/app app=ghcr.io/org/app@${{ steps.docker_build.outputs.digest }}

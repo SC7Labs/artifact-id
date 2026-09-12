@@ -1,0 +1,32 @@
+name: Python FastAPI Deploy
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install build
+      - run: python3 -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist-package
+          path: dist/
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-package
+      - run: pytest tests/
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: dist-package
+      - run: aws s3 sync dist/ s3://my-api-artifacts/

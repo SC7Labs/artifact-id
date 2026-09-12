@@ -1,0 +1,27 @@
+name: Action Semver and SHA
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - run: npm run build
+      - uses: actions/upload-artifact@v4.4.3
+        with:
+          name: app-dist
+          path: dist/
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@834a144ee995460fba8ed112f2fc961b36a5ec5a
+        with:
+          name: app-dist
+      - run: npm test
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4.1.8
+        with:
+          name: app-dist
+      - run: npm run deploy

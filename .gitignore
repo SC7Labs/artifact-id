@@ -1,0 +1,15 @@
+# Binaries
+/artifact-id
+/artifact-id.exe
+
+# Test and coverage artifacts
+*.out
+*.test
+coverage.txt
+
+# OS and Editor files
+.DS_Store
+.idea/
+.vscode/
+*.swp
+*~

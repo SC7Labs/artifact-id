@@ -1,0 +1,35 @@
+name: Rust Service CI/CD
+on:
+  push:
+    branches: [main]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: cargo build --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: server-binary
+          path: target/release/server
+  test:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: server-binary
+      - run: cargo test --release
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: server-binary
+      - run: scp ./server user@prod:/opt/bin/
+      - run: ssh user@prod "systemctl restart server"
+      - uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: rust-svc
