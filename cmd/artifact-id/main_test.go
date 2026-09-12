@@ -58,7 +58,9 @@ func TestCLI_InvalidArgs(t *testing.T) {
 }
 
 func TestCLI_Fixture01_NoWorkflows(t *testing.T) {
-	code := run([]string{testPath("testdata/repos/no_workflows")})
+	dir := testPath("testdata/repos/no_workflows")
+	_ = os.MkdirAll(dir, 0755)
+	code := run([]string{dir})
 	if code != ExitSuccess {
 		t.Errorf("expected exit code %d for empty repo, got %d", ExitSuccess, code)
 	}
